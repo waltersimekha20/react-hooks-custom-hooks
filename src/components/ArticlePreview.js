@@ -1,27 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { makeEmojiList } from "../utils";
+import React, { useEffect, useState } from "react";
+import About from "./About";
+import ArticleList from "./ArticleList";
+import useQuery from "../hooks/useQuery";
 
-function ArticlePreview({
-  id,
-  title,
-  date = "January 1, 1970",
-  preview,
-  minutes,
-}) {
-  const emojis = makeEmojiList(minutes);
+function HomePage() {
+  // fetch data for posts
+  const { data: posts, isLoaded } = useQuery("http://localhost:4000/posts");
+
+  useEffect(() => {
+    // This is unnecessary because you're already setting 'isLoaded' inside the 'useQuery' hook.
+    // setIsLoaded(false);
+    // fetch("http://localhost:4000/posts")
+    //   .then((r) => r.json())
+    //   .then((posts) => {
+    //     setPosts(posts);
+    //     setIsLoaded(true);
+    //   });
+  }, []);
+
+  // set the document title
+  useEffect(() => {
+    document.title = "Underreacted | Home";
+  }, []);
 
   return (
-    <article>
-      <h3>
-        <Link to={`/articles/${id}`}>{title}</Link>
-      </h3>
-      <small>
-        {date} • {emojis} {minutes} min read
-      </small>
-      <p>{preview}</p>
-    </article>
+    <>
+      <About />
+      {isLoaded ? <ArticleList posts={posts} /> : <h3>Loading...</h3>}
+    </>
   );
 }
 
-export default ArticlePreview;
+export default HomePage;
